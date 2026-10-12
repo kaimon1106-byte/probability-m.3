@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Probability Lab | ห้องทดลองความน่าจะเป็น ม.3</title>
+<style>
+:root{--ink:#202744;--muted:#68718b;--bg:#f4f6ff;--card:#fff;--purple:#7057d9;--pink:#f16b9b;--teal:#21a7a1;--gold:#f2b84b;--line:#e5e8f5}
+*{box-sizing:border-box}body{margin:0;font-family:Tahoma,"Noto Sans Thai",sans-serif;color:var(--ink);background:radial-gradient(circle at 10% 0%,#e8e4ff 0,transparent 35%),radial-gradient(circle at 95% 20%,#dff9f3 0,transparent 30%),var(--bg);line-height:1.55}
+header{padding:30px 20px 24px;text-align:center;background:linear-gradient(120deg,#5745bd,#846be9);color:white}
+header .tag{display:inline-block;border:1px solid #ffffff80;border-radius:999px;padding:4px 12px;font-size:13px}
+.lang-switch{display:flex;justify-content:center;gap:6px;margin:14px auto 0}
+.lang-btn{border:1px solid #ffffff80;background:#ffffff1c;color:#fff;padding:8px 14px;border-radius:999px;font-weight:bold;cursor:pointer;min-height:38px}
+.lang-btn.active{background:#fff;color:#5745bd;border-color:#fff}
+h1{font-size:clamp(25px,4vw,39px);margin:10px 0 5px}header p{margin:0;opacity:.93}
+.wrap{max-width:1100px;margin:22px auto;padding:0 16px 36px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 10px 28px #3b42800d;margin-bottom:18px}
+h2{font-size:20px;margin:0 0 12px;display:flex;align-items:center;gap:8px}h3{font-size:16px;margin:10px 0}
+.muted{color:var(--muted);font-size:14px}.formula{background:#f3f0ff;border-radius:12px;padding:12px 15px;font-weight:bold;color:#5745bd;text-align:center;font-size:18px}
+.controls{display:grid;gap:16px}.control label{display:flex;justify-content:space-between;gap:10px;font-weight:bold;font-size:14px}.control input{width:100%;accent-color:var(--purple);margin-top:9px}.pill{background:#f1edff;color:#5947bc;border-radius:999px;padding:3px 10px;font-size:13px;white-space:nowrap}
+.btn{border:0;border-radius:12px;padding:11px 15px;font-weight:bold;cursor:pointer;background:var(--purple);color:white;font-size:14px}.btn.secondary{background:#eef0fb;color:var(--ink)}.btn.teal{background:var(--teal)}.btnrow{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.stat{border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;background:#fcfcff}.stat strong{display:block;font-size:24px;color:var(--purple)}.stat span{font-size:12px;color:var(--muted)}
+.balls{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0;min-height:42px}.ball{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:white;font-weight:bold;box-shadow:inset -4px -5px 0 #00000012,0 3px 7px #00000014;animation:pop .25s ease-out}.ball.good{background:var(--teal)}.ball.other{background:var(--pink)}@keyframes pop{from{transform:scale(.5);opacity:.3}to{transform:scale(1);opacity:1}}
+.barwrap{margin:15px 0}.barlabel{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}.track{height:16px;border-radius:99px;background:#eceefa;overflow:hidden}.fill{height:100%;width:0;border-radius:99px;transition:width .25s}.fill.theory{background:var(--purple)}.fill.exp{background:var(--teal)}
+canvas{width:100%;height:220px;border:1px solid var(--line);border-radius:14px;background:#fff;display:block}
+.question{border:1px solid var(--line);padding:14px;border-radius:14px;margin:12px 0}.question p{margin:0 0 10px;font-weight:bold}.options{display:grid;gap:7px}.options label{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:9px;background:#f8f9ff;cursor:pointer;font-size:14px}.options label:hover{background:#f0edff}.feedback{font-size:13px;margin-top:8px;font-weight:bold}.correct{color:#12836d}.incorrect{color:#c74a72}
+.note{background:#fff8e7;border:1px solid #f8e5ad;padding:12px 14px;border-radius:12px;font-size:13px}.footer{text-align:center;color:var(--muted);font-size:12px;padding:8px}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.statgrid{grid-template-columns:repeat(3,1fr)}.card{padding:16px}}
+
+/* Mobile-first refinements */
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { padding-bottom: env(safe-area-inset-bottom); }
+button, input, label { touch-action: manipulation; }
+input[type="range"] { min-height: 34px; cursor: pointer; }
+.btn { min-height: 46px; padding: 12px 16px; }
+.card { scroll-margin-top: 12px; }
+@media (max-width: 600px) {
+  body { font-size: 15px; background: #f5f6ff; }
+  header { padding: 22px 16px 20px; border-radius: 0 0 24px 24px; }
+  header .tag { font-size: 11px; padding: 5px 10px; }
+  h1 { font-size: 27px; line-height: 1.25; margin: 12px 0 7px; }
+  header p { font-size: 13px; line-height: 1.5; max-width: 330px; margin: auto; }
+  .wrap { margin: 14px auto; padding: 0 12px 24px; }
+  .grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .card { padding: 16px; margin-bottom: 12px; border-radius: 18px; }
+  h2 { font-size: 18px; line-height: 1.35; margin-bottom: 10px; }
+  h3 { font-size: 15px; }
+  .muted { font-size: 13px; }
+  .formula { font-size: 16px; padding: 12px 10px; }
+  .control { padding: 2px 0; }
+  .control label { font-size: 14px; align-items: center; }
+  .control input { margin-top: 5px; height: 28px; }
+  .btnrow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .btnrow .btn:first-child { grid-column: 1 / -1; }
+  .btn { width: 100%; font-size: 14px; border-radius: 12px; }
+  .statgrid { gap: 7px; margin: 12px 0; }
+  .stat { padding: 10px 5px; border-radius: 12px; min-width: 0; }
+  .stat strong { font-size: clamp(18px, 6vw, 23px); overflow-wrap: anywhere; }
+  .stat span { display: block; font-size: 11px; line-height: 1.35; }
+  .balls { gap: 7px; }
+  .ball { width: 32px; height: 32px; font-size: 14px; }
+  .barwrap { margin: 13px 0; }
+  .barlabel { gap: 8px; font-size: 12px; align-items: baseline; }
+  .barlabel strong { text-align: right; }
+  .track { height: 14px; }
+  canvas { height: 230px; }
+  .question { padding: 12px; margin: 10px 0; border-radius: 13px; }
+  .question p { font-size: 14px; line-height: 1.55; }
+  .options label { padding: 11px 10px; font-size: 13px; line-height: 1.45; min-height: 42px; }
+  .options input { margin-top: 3px; flex: 0 0 auto; }
+  .feedback { line-height: 1.55; }
+  .note { font-size: 12px; line-height: 1.55; }
+  .footer { font-size: 11px; padding: 10px 8px 18px; }
+}
+@media (max-width: 360px) {
+  .statgrid { grid-template-columns: 1fr 1fr; }
+  .stat:last-child { grid-column: 1 / -1; }
+  .barlabel { font-size: 11px; }
+  h1 { font-size: 24px; }
+}
+
+
+/* Final mobile compatibility layer */
+body { min-width: 0; width: 100%; overflow-x: hidden; }
+.wrap, .card, .grid, .control, .question { min-width: 0; }
+canvas { display:block; width:100% !important; max-width:100%; height:230px; }
+.barlabel span { min-width:0; overflow-wrap:anywhere; }
+.barlabel strong { flex-shrink:0; }
+button, input, label { -webkit-tap-highlight-color: transparent; }
+input[type="range"] { width:100%; min-width:0; height:34px; }
+.lang-switch { padding-bottom:2px; }
+@media (max-width: 600px) {
+  .wrap { width:100%; padding-left:10px; padding-right:10px; }
+  .grid { display:grid; grid-template-columns:minmax(0,1fr); }
+  .card { width:100%; overflow:hidden; }
+  .control label { flex-wrap:wrap; }
+  .control label .pill { margin-left:auto; }
+  .btnrow { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .btnrow .btn { min-width:0; white-space:normal; }
+  .statgrid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .stat { min-width:0; overflow-wrap:anywhere; }
+  .stat strong { font-size:clamp(17px,5vw,23px); }
+  .barlabel { align-items:flex-start; }
+  .barlabel strong { max-width:58%; }
+  .options label { align-items:flex-start; }
+  .options label input { margin-top:3px; }
+  .lang-btn { min-height:44px; padding:9px 18px; }
+}
+@media (max-width: 350px) {
+  .statgrid { grid-template-columns:1fr; }
+  .stat { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .stat strong { font-size:20px; }
+  .btnrow { grid-template-columns:1fr; }
+  .btnrow .btn:first-child { grid-column:auto; }
+}
+
+
+/* WOW edition: app-like visual hierarchy */
+:root{--ink:#1f2440;--muted:#66708c;--bg:#f4f5ff;--card:#fff;--purple:#6c52df;--pink:#f46b9b;--teal:#19a995;--gold:#ffc857;--line:#e5e7f4}
+body{background:radial-gradient(ellipse at 0% 0%,#e5dfff 0,transparent 34%),radial-gradient(ellipse at 100% 18%,#d7fbf0 0,transparent 30%),#f5f6ff}
+header{position:relative;overflow:hidden;background:linear-gradient(135deg,#32216f 0%,#6546d8 48%,#9b7bfa 100%);padding:30px 20px 26px}
+header:before,header:after{content:"";position:absolute;border-radius:50%;background:#ffffff12;pointer-events:none}
+header:before{width:220px;height:220px;right:-55px;top:-95px}
+header:after{width:140px;height:140px;left:-55px;bottom:-80px}
+header>*{position:relative;z-index:1}
+header h1{letter-spacing:-.5px;text-shadow:0 4px 20px #20115c55}
+header .tag{background:#ffffff16;backdrop-filter:blur(8px)}
+.wrap{max-width:1040px}
+.card{box-shadow:0 12px 32px #33206e0b;transition:transform .18s ease,box-shadow .18s ease}
+.card:hover{box-shadow:0 16px 36px #33206e12}
+h2{letter-spacing:-.2px}
+.wow-kicker{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#d9d0ff;font-weight:800;margin-bottom:4px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:18px;text-align:left}
+.hero-stat{background:#ffffff12;border:1px solid #ffffff24;border-radius:15px;padding:10px 12px;backdrop-filter:blur(8px)}
+.hero-stat strong{display:block;font-size:18px;color:#fff}.hero-stat span{font-size:11px;color:#e5e0ff}
+.preset-row{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 15px}
+.preset{border:1px solid #e3defb;background:#f7f4ff;color:#5b45bd;border-radius:999px;padding:9px 12px;font-weight:700;font-size:12px;cursor:pointer;min-height:40px}
+.preset.active,.preset:hover{background:#6c52df;color:white;border-color:#6c52df}
+.challenge{border-radius:15px;padding:13px 14px;background:linear-gradient(120deg,#f1edff,#e9fbf6);border:1px solid #e5defd;margin:12px 0}
+.challenge strong{display:block;margin-bottom:3px}
+.progress-line{height:6px;background:#e9e7f7;border-radius:99px;overflow:hidden;margin-top:8px}
+.progress-line span{display:block;height:100%;width:0;background:linear-gradient(90deg,#6c52df,#19a995);border-radius:99px;transition:width .35s}
+.stat strong{background:linear-gradient(135deg,#6c52df,#19a995);background-clip:text;-webkit-background-clip:text;color:transparent}
+.ball{transition:transform .18s;cursor:default}
+.ball:hover{transform:translateY(-3px) rotate(-8deg)}
+.btn{box-shadow:0 5px 12px #6c52df20;transition:transform .15s,filter .15s}
+.btn:active{transform:scale(.97)}
+.btn.teal{background:linear-gradient(135deg,#119d8e,#24c3a8)}
+.fill.theory{background:linear-gradient(90deg,#6c52df,#9b7bfa)}
+.fill.exp{background:linear-gradient(90deg,#19a995,#55d8b7)}
+.question{transition:border-color .2s,box-shadow .2s}
+.question:focus-within{border-color:#b6a7ff;box-shadow:0 0 0 3px #6c52df12}
+#score{padding:0}#score.score-pop{padding:12px 14px;background:#e6fbf2;border-radius:12px;color:#127b65;animation:scorePop .4s ease}
+@keyframes scorePop{0%{transform:scale(.96);opacity:.5}100%{transform:scale(1);opacity:1}}
+@media(max-width:600px){header{padding:24px 15px 22px}.hero-stats{gap:6px}.hero-stat{padding:9px 8px}.hero-stat strong{font-size:15px}.preset-row{gap:6px}.preset{padding:8px 10px}.challenge{font-size:13px}}
+
+
+/* Learning upgrade: prediction, live insight, and experiment shortcuts */
+.predict-picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.predict-pick{border:1px solid #ded8fb;border-radius:12px;padding:10px 6px;background:#fff;color:#4f4388;font-weight:800;cursor:pointer;min-height:46px}
+.predict-pick.selected{background:linear-gradient(135deg,#6c52df,#947cf4);color:#fff;border-color:#6c52df;box-shadow:0 5px 14px #6c52df25}
+.predict-result{font-size:13px;margin-top:9px;font-weight:700;min-height:20px}
+.experiment-shortcuts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.experiment-shortcuts .btn{flex:1 1 120px}
+.insight-live{background:linear-gradient(120deg,#f0edff,#e5fbf5);border:1px solid #e3defb;border-radius:15px;padding:14px;margin-top:14px}
+.insight-live strong{display:block;margin-bottom:4px;color:#4f3bb0}
+#last.flash{animation:resultFlash .45s ease}
+@keyframes resultFlash{0%{transform:scale(.92);opacity:.5}65%{transform:scale(1.04)}100%{transform:scale(1);opacity:1}}
+@media(max-width:600px){.predict-picks{gap:6px}.predict-pick{font-size:13px;padding:9px 4px}.experiment-shortcuts{display:grid;grid-template-columns:1fr 1fr}.experiment-shortcuts .btn{min-width:0}}
+
+
+
+/* Pastel app-inspired UI refresh */
+:root{--ink:#303447;--muted:#778096;--bg:#eaf8fa;--card:#ffffff;--purple:#8a72db;--pink:#f58ab2;--teal:#55c4c3;--gold:#ffc96a;--line:#e8e8f3}
+html{background:#eaf8fa}
+body{color:var(--ink);background:linear-gradient(180deg,#dff3f5 0%,#f7f1fb 48%,#f8f8fc 100%);font-family:ui-rounded,"Aptos",Tahoma,"Noto Sans Thai",sans-serif}
+header{max-width:1240px;margin:18px auto 0;border-radius:30px;padding:28px 28px 24px;text-align:left;color:#303447;background:rgba(255,255,255,.94);box-shadow:0 14px 38px #6c8c9c12;border:1px solid #ffffff;overflow:hidden}
+header:before{width:250px;height:250px;right:-70px;top:-115px;background:#fce2ed}
+header:after{width:180px;height:180px;left:auto;right:130px;bottom:-125px;background:#e8e1ff}
+header .wow-kicker{color:#8a72db;letter-spacing:2px;font-size:11px}
+header .tag{color:#765dc9;background:#f5efff;border:1px solid #ece4ff;backdrop-filter:none}
+header h1{color:#303447;text-shadow:none;font-size:clamp(28px,4vw,40px);margin:12px 0 7px}
+header p{color:#778096;opacity:1;max-width:720px}
+.hero-stats{max-width:650px;gap:10px;margin-top:20px}
+.hero-stat{background:#fbfaff;border:1px solid #eeeaf8;backdrop-filter:none;border-radius:18px;padding:12px 14px}
+.hero-stat strong{color:#8a72db;font-size:15px}.hero-stat span{color:#7a8297;font-size:12px}
+.lang-switch{justify-content:flex-start;margin:15px 0 0}
+.lang-btn{background:#f7f4ff;border:1px solid #e8e0ff;color:#806ac8}.lang-btn.active{background:#f58ab2;color:#fff;border-color:#f58ab2}
+.wrap{max-width:1240px;margin:18px auto;padding:0 18px 40px}
+.card{border:1px solid #fff;border-radius:28px;padding:24px;background:rgba(255,255,255,.96);box-shadow:0 12px 32px #7999a30d;margin-bottom:18px}
+.card:hover{box-shadow:0 16px 36px #7999a315;transform:translateY(-1px)}
+h2{font-size:21px;color:#303447;margin-bottom:14px}
+h3{font-size:16px;color:#41465d}
+.formula{background:#f3efff;border:1px solid #ebe3ff;color:#7259c6;border-radius:18px;padding:15px;font-size:19px}
+.challenge{background:linear-gradient(120deg,#fff0f6,#f0edff 58%,#e8fbf7);border:1px solid #f0e5ff;border-radius:20px;padding:16px}
+.predict-pick{border:1px solid #f0e3f1;background:#fff8fb;color:#5d5872;border-radius:15px;box-shadow:0 3px 10px #9e8bb20b}
+.predict-pick.selected{background:linear-gradient(135deg,#f58ab2,#a18bea);border-color:#f58ab2;box-shadow:0 7px 16px #f58ab233}
+.preset{background:#fff7fb;border:1px solid #f4dce8;color:#9a5f80;border-radius:999px}
+.preset.active,.preset:hover{background:#f58ab2;color:white;border-color:#f58ab2}
+.control label{font-size:14px;color:#4b5065}
+input[type=range]{accent-color:#a18bea}
+.pill{background:#f5efff;color:#856ed0;border-radius:999px;padding:5px 11px}
+.btn{background:linear-gradient(135deg,#a18bea,#806bd6);border-radius:15px;box-shadow:0 6px 15px #8a72db22}
+.btn.secondary{background:#f7f4ff;color:#7563bd;border:1px solid #ebe4ff;box-shadow:none}
+.btn.teal{background:linear-gradient(135deg,#57c7c0,#37aaa8)}
+.statgrid{gap:12px}
+.stat{background:#fdfcff;border:1px solid #e9e7f7;border-radius:20px;padding:16px 10px}
+.stat strong{font-size:27px;background:linear-gradient(135deg,#8a72db,#4bb9b5);background-clip:text;-webkit-background-clip:text;color:transparent}
+.balls{gap:10px;padding:3px 0}
+.ball{width:44px;height:44px;box-shadow:inset -4px -5px 0 #00000010,0 5px 10px #52677b1a}
+.ball.other{background:radial-gradient(circle at 32% 28%,#ffb0cb,#f16d9b 70%)}
+.ball.good{background:radial-gradient(circle at 32% 28%,#8ce6d1,#23aaa6 72%)}
+.ball:nth-child(3n+2){background:radial-gradient(circle at 32% 28%,#9bc8ff,#5c91ee 72%)}
+.track{background:#f0eff8;height:17px}
+.fill.theory{background:linear-gradient(90deg,#a18bea,#c3aaff)}
+.fill.exp{background:linear-gradient(90deg,#55c4c3,#8be0d4)}
+canvas{border:1px solid #e8e5f5;border-radius:20px;background:#fff}
+.insight-live{background:linear-gradient(120deg,#f5f0ff,#e9fbf7);border:1px solid #e8e3fa;border-radius:20px}
+.note{background:#fff8e9;border:1px solid #f8e9c7;border-radius:16px}
+.question{border-radius:18px;background:#fff;border-color:#e9e7f5}
+.options label{background:#f8f7fc;border-radius:13px}
+.options label:hover{background:#fff0f6}
+.question:focus-within{border-color:#f1a2c0;box-shadow:0 0 0 3px #f58ab218}
+@media(max-width:760px){header{margin:0;border-radius:0 0 28px 28px;padding:24px 18px 20px}.wrap{padding-left:12px;padding-right:12px}.card{padding:18px;border-radius:23px}.hero-stats{grid-template-columns:1fr 1fr}.hero-stat:last-child{grid-column:1/-1}.lang-switch{justify-content:center}.statgrid{gap:7px}.stat{padding:12px 5px}.ball{width:35px;height:35px}.formula{font-size:16px}}
+
+</style>
+</head>
+<body>
+<header>
+<div class="wow-kicker">INTERACTIVE MATHEMATICS • GRADE 9</div>
+<span class="tag" data-i18n="tag">MATH LAB • มัธยมศึกษาปีที่ 3</span>
+<h1 data-i18n="title">🎲 ห้องทดลองความน่าจะเป็น</h1>
+<p data-i18n="subtitle">ปรับจำนวนลูกบอล ทดลองสุ่ม และเปรียบเทียบค่าทฤษฎีกับผลการทดลอง</p>
+<div class="hero-stats">
+  <div class="hero-stat"><strong>01 / EXPLORE</strong><span data-i18n="heroExplore">ปรับตัวแปร</span></div>
+  <div class="hero-stat"><strong>02 / EXPERIMENT</strong><span data-i18n="heroExperiment">ทดลองสุ่ม</span></div>
+  <div class="hero-stat"><strong>03 / ANALYZE</strong><span data-i18n="heroAnalyze">วิเคราะห์ผล</span></div>
+</div>
+<div class="lang-switch" role="group" aria-label="Language selector"><button class="lang-btn active" id="lang-th" type="button" aria-pressed="true">ไทย</button><button class="lang-btn" id="lang-en" type="button" aria-pressed="false">English</button></div>
+</header>
+<main class="wrap">
+<section class="card">
+<h2 data-i18n="objectiveTitle">🎯 เป้าหมายการเรียนรู้</h2>
+<p data-i18n="objectiveText">นักเรียนสามารถวิเคราะห์ความน่าจะเป็นของเหตุการณ์ คำนวณความน่าจะเป็นทางทฤษฎี และอธิบายความแตกต่างระหว่างค่าทฤษฎีกับผลการทดลองได้</p>
+<div class="formula">P(A) = จำนวนผลลัพธ์ที่สนใจ ÷ จำนวนผลลัพธ์ทั้งหมด</div>
+</section>
+<div class="grid">
+<section class="card">
+<h2 data-i18n="setupTitle">🧪 1. ตั้งค่าการทดลอง</h2>
+<p class="muted" data-i18n="setupText">สมมติว่าหยิบลูกบอล 1 ลูกจากถุง โดยไม่มอง แล้วใส่คืนทุกครั้ง</p>
+<div class="challenge" id="predictionBox"><strong data-i18n="predictTitle">🔮 ทำนายก่อนทดลอง</strong><span data-i18n="predictText">ลองเดาว่าสีใดมีโอกาสออกมากที่สุด แล้วค่อยกดสุ่มเพื่อพิสูจน์</span>
+<div class="predict-picks" role="group" aria-label="ทำนายสีที่จะออก"><button type="button" class="predict-pick" data-predict="red">🔴 สีแดง</button><button type="button" class="predict-pick" data-predict="blue">🔵 สีฟ้า</button><button type="button" class="predict-pick" data-predict="green">🟢 สีเขียว</button></div>
+<div class="predict-result" id="predictionFeedback" aria-live="polite">เลือกสีที่คิดว่าจะมีโอกาสออกมากที่สุด</div></div>
+<h3 data-i18n="presetTitle">เลือกสถานการณ์ทดลองด่วน</h3>
+<div class="preset-row">
+<button class="preset active" type="button" data-preset="default" data-i18n="presetDefault">สมดุล 3–2–5</button>
+<button class="preset" type="button" data-preset="equal" data-i18n="presetEqual">โอกาสเท่ากัน</button>
+<button class="preset" type="button" data-preset="red" data-i18n="presetRed">แดงมีโอกาสสูง</button>
+<button class="preset" type="button" data-preset="green" data-i18n="presetGreen">เขียวมีโอกาสสูง</button>
+</div>
+<div class="controls">
+<div class="control"><label for="red"><span data-i18n="redLabel">🔴 ลูกบอลสีแดง</span> <span class="pill" id="redVal">3 ลูก</span></label><input id="red" type="range" min="0" max="20" value="3"></div>
+<div class="control"><label for="blue"><span data-i18n="blueLabel">🔵 ลูกบอลสีฟ้า</span> <span class="pill" id="blueVal">2 ลูก</span></label><input id="blue" type="range" min="0" max="20" value="2"></div>
+<div class="control"><label for="green"><span data-i18n="greenLabel">🟢 ลูกบอลสีเขียว</span> <span class="pill" id="greenVal">5 ลูก</span></label><input id="green" type="range" min="0" max="20" value="5"></div>
+<div class="control"><label for="draws"><span data-i18n="drawsLabel">จำนวนครั้งที่ทดลอง</span> <span class="pill" id="drawsVal">50 ครั้ง</span></label><input id="draws" type="range" min="10" max="500" step="10" value="50"></div>
+</div>
+<div class="btnrow"><button class="btn" id="run" data-i18n="runBtn">▶ สุ่มทดลอง</button><button class="btn secondary" id="step" data-i18n="stepBtn">สุ่ม 1 ครั้ง</button><button class="btn secondary" id="reset" data-i18n="resetBtn">↻ เริ่มใหม่</button></div>
+<div class="experiment-shortcuts" aria-label="ทางลัดจำนวนครั้งทดลอง">
+<button type="button" class="btn secondary" data-run-count="10">⚡ สุ่ม 10 ครั้ง</button>
+<button type="button" class="btn secondary" data-run-count="100">🚀 สุ่ม 100 ครั้ง</button>
+</div>
+<div class="note" style="margin-top:14px" data-i18n="emptyNote">💡 ถ้าจำนวนลูกบอลรวมเป็น 0 จะยังทดลองสุ่มไม่ได้ กรุณาเพิ่มลูกบอลอย่างน้อย 1 ลูก</div>
+</section>
+<section class="card">
+<h2 data-i18n="bagTitle">👜 2. มองเข้าไปในถุง</h2>
+<p class="muted" data-i18n="bagText">จำนวนและสัดส่วนลูกบอลจะเปลี่ยนทันทีเมื่อเลื่อนแถบด้านซ้าย</p>
+<div id="balls" class="balls" aria-label="ภาพลูกบอลในถุง"></div>
+<div class="statgrid">
+<div class="stat"><strong id="total">10</strong><span data-i18n="totalLabel">ลูกบอลทั้งหมด</span></div>
+<div class="stat"><strong id="theory">30%</strong><span data-i18n="redChanceLabel">โอกาสได้สีแดง</span></div>
+<div class="stat"><strong id="last">—</strong><span data-i18n="lastLabel">ผลสุ่มล่าสุด</span></div>
+</div>
+<h3 data-i18n="theoryTitle">ความน่าจะเป็นทางทฤษฎี</h3>
+<div id="theoryBars"></div>
+</section>
+</div>
+<section class="card">
+<h2 data-i18n="chartTitle">📊 3. เปรียบเทียบผลการทดลองแบบเรียลไทม์</h2>
+<p class="muted" data-i18n="chartText">กด “สุ่มทดลอง” เพื่อสุ่มตามจำนวนครั้งที่เลือก กราฟจะแสดงเปอร์เซ็นต์ที่ได้จริงเทียบกับค่าทฤษฎี</p>
+<canvas id="chart" width="900" height="280" aria-label="กราฟเปรียบเทียบความน่าจะเป็น"></canvas>
+<div id="expBars"></div>
+<div class="note" data-i18n="chartNote">สังเกต: เมื่อทดลองหลายครั้ง ผลการทดลองมักมีแนวโน้มเข้าใกล้ค่าทฤษฎี แต่ไม่จำเป็นต้องเท่ากันทุกครั้ง</div>
+<div class="challenge"><strong data-i18n="insightTitle">💡 นักคณิตศาสตร์สังเกตอะไร?</strong><span data-i18n="insightText">ความน่าจะเป็นทางทฤษฎีเป็นค่าที่คำนวณได้ ส่วนผลทดลองจริงเปลี่ยนแปลงได้ในแต่ละชุดการสุ่ม</span></div>
+<div class="insight-live"><strong>🧭 สรุปผลจากการทดลองของคุณ</strong><div id="liveInsight" aria-live="polite">เริ่มทดลองเพื่อดูการเปรียบเทียบผลจริงกับค่าทฤษฎี</div></div>
+</section>
+<section class="card">
+<h2 data-i18n="quizTitle">🧠 4. คำถามท้ายกิจกรรม</h2>
+<p class="muted" data-i18n="quizText">ตอบทั้ง 3 ข้อ แล้วกดตรวจคำตอบเพื่อดูคะแนนและเฉลย</p>
+<div class="progress-line" aria-label="Quiz progress"><span id="quizProgress"></span></div>
+<form id="quiz">
+<div class="question"><p>ข้อ 1: ในถุงมีลูกบอลสีแดง 3 ลูก สีฟ้า 2 ลูก และสีเขียว 5 ลูก ความน่าจะเป็นที่จะหยิบได้สีฟ้าเท่ากับเท่าใด</p><div class="options">
+<label><input type="radio" name="q1" value="a"> 2/5</label><label><input type="radio" name="q1" value="b"> 1/5</label><label><input type="radio" name="q1" value="c"> 1/2</label></div><div class="feedback" id="f1"></div></div>
+<div class="question"><p>ข้อ 2: ถุงมีลูกบอลสีแดง 4 ลูก และสีฟ้า 4 ลูก ข้อใดถูกต้อง</p><div class="options">
+<label><input type="radio" name="q2" value="a"> โอกาสได้สีแดงมากกว่าสีฟ้า</label><label><input type="radio" name="q2" value="b"> โอกาสได้สีแดงน้อยกว่าสีฟ้า</label><label><input type="radio" name="q2" value="c"> โอกาสได้สีแดงและสีฟ้าเท่ากัน</label></div><div class="feedback" id="f2"></div></div>
+<div class="question"><p>ข้อ 3: ทดลองสุ่ม 10 ครั้ง ได้สีแดง 8 ครั้ง ข้อสรุปใดเหมาะสมที่สุด</p><div class="options">
+<label><input type="radio" name="q3" value="a"> ความน่าจะเป็นทางทฤษฎีของสีแดงต้องเท่ากับ 80% เสมอ</label><label><input type="radio" name="q3" value="b"> ผลการทดลองอาจต่างจากค่าทฤษฎีได้ โดยเฉพาะเมื่อทดลองไม่มากครั้ง</label><label><input type="radio" name="q3" value="c"> การทดลองผิดแน่นอน เพราะผลต้องเท่ากับค่าทฤษฎี</label></div><div class="feedback" id="f3"></div></div>
+<div class="btnrow"><button class="btn teal" type="submit" data-i18n="checkBtn">ตรวจคำตอบ</button><button class="btn secondary" type="button" id="showAnswers" data-i18n="answersBtn">แสดงเฉลย</button><button class="btn secondary" type="button" id="clearQuiz" data-i18n="clearBtn">ล้างคำตอบ</button></div>
+<div id="score" style="margin-top:12px;font-weight:bold" aria-live="polite"></div>
+</form>
+</section>
+<div class="footer" data-i18n="footer">สื่อการเรียนรู้คณิตศาสตร์ • ความน่าจะเป็น ม.3 • ใช้งานได้โดยไม่ต้องเชื่อมต่ออินเทอร์เน็ต</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const colors=[{key:'red',name:'สีแดง',emoji:'🔴',cls:'other',css:'#f16b9b'},{key:'blue',name:'สีฟ้า',emoji:'🔵',cls:'other',css:'#5b8def'},{key:'green',name:'สีเขียว',emoji:'🟢',cls:'good',css:'#21a7a1'}];
+let counts={red:3,blue:2,green:5}, results={red:0,blue:0,green:0}, last='—', totalDraws=0;
+function values(){return {red:+$('red').value,blue:+$('blue').value,green:+$('green').value}}
+function sum(o){return Object.values(o).reduce((a,b)=>a+b,0)}
+function pct(n,d){return d? n/d*100:0}
+let language = 'th';
+const translations = {
+ th: {
+  tag:'MATH LAB • มัธยมศึกษาปีที่ 3', heroExplore:'ปรับตัวแปร', heroExperiment:'ทดลองสุ่ม', heroAnalyze:'วิเคราะห์ผล', predictTitle:'🔮 ทำนายก่อนทดลอง', predictText:'ลองเดาว่าสีใดมีโอกาสออกมากที่สุด แล้วค่อยกดสุ่มเพื่อพิสูจน์', presetTitle:'เลือกสถานการณ์ทดลองด่วน', presetDefault:'สมดุล 3–2–5', presetEqual:'โอกาสเท่ากัน', presetRed:'แดงมีโอกาสสูง', presetGreen:'เขียวมีโอกาสสูง', title:'🎲 ห้องทดลองความน่าจะเป็น', subtitle:'ปรับจำนวนลูกบอล ทดลองสุ่ม และเปรียบเทียบค่าทฤษฎีกับผลการทดลอง',
+  objectiveTitle:'🎯 เป้าหมายการเรียนรู้', objectiveText:'นักเรียนสามารถวิเคราะห์ความน่าจะเป็นของเหตุการณ์ คำนวณความน่าจะเป็นทางทฤษฎี และอธิบายความแตกต่างระหว่างค่าทฤษฎีกับผลการทดลองได้',
+  setupTitle:'🧪 1. ตั้งค่าการทดลอง', setupText:'สมมติว่าหยิบลูกบอล 1 ลูกจากถุง โดยไม่มอง แล้วใส่คืนทุกครั้ง',
+  redLabel:'🔴 ลูกบอลสีแดง', blueLabel:'🔵 ลูกบอลสีฟ้า', greenLabel:'🟢 ลูกบอลสีเขียว', drawsLabel:'จำนวนครั้งที่ทดลอง',
+  runBtn:'▶ สุ่มทดลอง', stepBtn:'สุ่ม 1 ครั้ง', resetBtn:'↻ เริ่มใหม่', emptyNote:'💡 ถ้าจำนวนลูกบอลรวมเป็น 0 จะยังทดลองสุ่มไม่ได้ กรุณาเพิ่มลูกบอลอย่างน้อย 1 ลูก',
+  bagTitle:'👜 2. มองเข้าไปในถุง', bagText:'จำนวนและสัดส่วนลูกบอลจะเปลี่ยนทันทีเมื่อเลื่อนแถบด้านซ้าย',
+  totalLabel:'ลูกบอลทั้งหมด', redChanceLabel:'โอกาสได้สีแดง', lastLabel:'ผลสุ่มล่าสุด', theoryTitle:'ความน่าจะเป็นทางทฤษฎี',
+  chartTitle:'📊 3. เปรียบเทียบผลการทดลองแบบเรียลไทม์', chartText:'กด “สุ่มทดลอง” เพื่อสุ่มตามจำนวนครั้งที่เลือก กราฟจะแสดงเปอร์เซ็นต์ที่ได้จริงเทียบกับค่าทฤษฎี',
+  chartNote:'สังเกต: เมื่อทดลองหลายครั้ง ผลการทดลองมักมีแนวโน้มเข้าใกล้ค่าทฤษฎี แต่ไม่จำเป็นต้องเท่ากันทุกครั้ง', insightTitle:'💡 นักคณิตศาสตร์สังเกตอะไร?', insightText:'ความน่าจะเป็นทางทฤษฎีเป็นค่าที่คำนวณได้ ส่วนผลทดลองจริงเปลี่ยนแปลงได้ในแต่ละชุดการสุ่ม',
+  quizTitle:'🧠 4. คำถามท้ายกิจกรรม', quizText:'ตอบทั้ง 3 ข้อ แล้วกดตรวจคำตอบเพื่อดูคะแนนและเฉลย',
+  checkBtn:'ตรวจคำตอบ', answersBtn:'แสดงเฉลย', clearBtn:'ล้างคำตอบ', footer:'สื่อการเรียนรู้คณิตศาสตร์ • ความน่าจะเป็น ม.3 • ใช้งานได้โดยไม่ต้องเชื่อมต่ออินเทอร์เน็ต',
+  colors:['สีแดง','สีฟ้า','สีเขียว'], ball:'ลูก', times:'ครั้ง', emptyBag:'ถุงว่างเปล่า — เพิ่มลูกบอลเพื่อเริ่มทดลอง', andMore:'และอีก ', latestEmpty:'ถุงว่าง',
+  theory:'ค่าทฤษฎี', experimental:'ผลทดลอง', actual:'จริง', experimentCount:'ทดลอง ', score:'คะแนนของคุณ ', correct:'ถูกต้อง! ', incorrect:'ยังไม่ถูก ', alert:'กรุณาเพิ่มลูกบอลอย่างน้อย 1 ลูกก่อนทดลอง',
+  q1:'ข้อ 1: ในถุงมีลูกบอลสีแดง 3 ลูก สีฟ้า 2 ลูก และสีเขียว 5 ลูก ความน่าจะเป็นที่จะหยิบได้สีฟ้าเท่ากับเท่าใด',
+  q1a:['2/5','1/5','1/2'], q2:'ข้อ 2: ถุงมีลูกบอลสีแดง 4 ลูก และสีฟ้า 4 ลูก ข้อใดถูกต้อง', q2a:['โอกาสได้สีแดงมากกว่าสีฟ้า','โอกาสได้สีแดงน้อยกว่าสีฟ้า','โอกาสได้สีแดงและสีฟ้าเท่ากัน'],
+  q3:'ข้อ 3: ทดลองสุ่ม 10 ครั้ง ได้สีแดง 8 ครั้ง ข้อสรุปใดเหมาะสมที่สุด', q3a:['ความน่าจะเป็นทางทฤษฎีของสีแดงต้องเท่ากับ 80% เสมอ','ผลการทดลองอาจต่างจากค่าทฤษฎีได้ โดยเฉพาะเมื่อทดลองไม่มากครั้ง','การทดลองผิดแน่นอน เพราะผลต้องเท่ากับค่าทฤษฎี'],
+  explanations:['เฉลย: 2/10 = 1/5 เพราะมีลูกบอลสีฟ้า 2 ลูก จากทั้งหมด 10 ลูก','เฉลย: มีจำนวนเท่ากัน จึงมีความน่าจะเป็นเท่ากัน คือ 4/8 = 1/2','เฉลย: ผลการทดลองอาจแตกต่างจากค่าทฤษฎีได้ โดยเฉพาะเมื่อจำนวนครั้งที่ทดลองยังน้อย']
+ },
+ en: {
+  tag:'MATH LAB • GRADE 9', heroExplore:'Adjust variables', heroExperiment:'Run trials', heroAnalyze:'Analyze results', predictTitle:'🔮 Predict before you test', predictText:'Guess which color is most likely, then run the experiment to test your prediction.', presetTitle:'Quick experiment presets', presetDefault:'Classic 3–2–5', presetEqual:'Equal chances', presetRed:'Red is more likely', presetGreen:'Green is more likely', title:'🎲 Probability Lab', subtitle:'Adjust the balls, run random trials, and compare theoretical probability with experimental results.',
+  objectiveTitle:'🎯 Learning Objective', objectiveText:'Students will analyze the probability of events, calculate theoretical probability, and explain the difference between theoretical and experimental results.',
+  setupTitle:'🧪 1. Set Up the Experiment', setupText:'Imagine drawing one ball from the bag without looking, then replacing it after every draw.',
+  redLabel:'🔴 Red balls', blueLabel:'🔵 Blue balls', greenLabel:'🟢 Green balls', drawsLabel:'Number of trials',
+  runBtn:'▶ Run experiment', stepBtn:'Draw once', resetBtn:'↻ Reset', emptyNote:'💡 You cannot draw from an empty bag. Add at least one ball to begin.',
+  bagTitle:'👜 2. Look Inside the Bag', bagText:'The number and proportion of balls update as you move the sliders.',
+  totalLabel:'Total balls', redChanceLabel:'Chance of red', lastLabel:'Latest draw', theoryTitle:'Theoretical Probability',
+  chartTitle:'📊 3. Compare Results in Real Time', chartText:'Press “Run experiment” to run the selected number of trials. The chart compares observed percentages with theoretical probabilities.',
+  chartNote:'Notice: As the number of trials increases, experimental results tend to approach theoretical probabilities, but they may not match exactly.', insightTitle:'💡 What do mathematicians notice?', insightText:'Theoretical probability is calculated, while experimental results can vary from one set of trials to another.',
+  quizTitle:'🧠 4. Check Your Understanding', quizText:'Answer all three questions, then check your answers to see your score and explanations.',
+  checkBtn:'Check answers', answersBtn:'Show answers', clearBtn:'Clear answers', footer:'Mathematics learning tool • Probability • Works offline',
+  colors:['Red','Blue','Green'], ball:'balls', times:'trials', emptyBag:'The bag is empty — add balls to begin.', andMore:'and ', latestEmpty:'Empty bag',
+  theory:'Theoretical', experimental:'Experimental', actual:'Actual', experimentCount:'Trials: ', score:'Your score: ', correct:'Correct! ', incorrect:'Not quite. ', alert:'Please add at least one ball before running the experiment.',
+  q1:'Q1: A bag contains 3 red, 2 blue, and 5 green balls. What is the probability of drawing a blue ball?',
+  q1a:['2/5','1/5','1/2'], q2:'Q2: A bag contains 4 red balls and 4 blue balls. Which statement is correct?', q2a:['Red is more likely than blue.','Red is less likely than blue.','Red and blue are equally likely.'],
+  q3:'Q3: In 10 trials, a red ball is drawn 8 times. Which conclusion is best?', q3a:['The theoretical probability of red must always be 80%.','Experimental results can differ from theoretical probability, especially with few trials.','The experiment is definitely wrong because results must equal theory.'],
+  explanations:['Answer: 2/10 = 1/5, because 2 of the 10 balls are blue.','Answer: They are equally likely: 4/8 = 1/2 for each color.','Answer: Experimental results can differ from theoretical probability, especially when there are few trials.']
+ }
+};
+function t(key){return translations[language][key]}
+function thaiPct(n){return n.toLocaleString(language==='th'?'th-TH':'en-US',{maximumFractionDigits:1})+'%'}
+function setLanguage(lang){
+ language=lang;
+ document.documentElement.lang=lang==='th'?'th':'en';
+ document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.getAttribute('data-i18n');if(t(key)!==undefined)el.textContent=t(key)});
+ $('lang-th').classList.toggle('active',lang==='th');$('lang-en').classList.toggle('active',lang==='en');
+ $('lang-th').setAttribute('aria-pressed',lang==='th');$('lang-en').setAttribute('aria-pressed',lang==='en');
+ renderQuizLanguage(); updateQuizProgress(); update();
+}
+
+let predictedColor = '';
+function updatePredictionFeedback(){
+ const el=$('predictionFeedback');
+ if(!predictedColor){el.textContent=language==='th'?'เลือกสีที่คิดว่าจะมีโอกาสออกมากที่สุด':'Choose the color you think is most likely';return}
+ const max=Math.max(counts.red,counts.blue,counts.green);
+ const winners=colors.filter(c=>counts[c.key]===max && max>0).map(c=>c.key);
+ const chosen=colors.find(c=>c.key===predictedColor);
+ if(max===0){el.textContent=language==='th'?'เพิ่มลูกบอลก่อน แล้วค่อยตรวจคำทำนาย':'Add at least one ball before checking your prediction';return}
+ const right=winners.includes(predictedColor);
+ el.textContent=(right?'✨ ':'💭 ')+(language==='th'?(right?'คำทำนายสอดคล้องกับจำนวนลูกบอลมากที่สุด!':'ลองสังเกตจำนวนลูกบอลแต่ละสี แล้วทำนายอีกครั้ง'):(right?'Good prediction! This color has the highest theoretical chance.':'Look at the number of balls in each color and try again.'));
+ document.querySelectorAll('[data-predict]').forEach(b=>b.classList.toggle('selected',b.dataset.predict===predictedColor));
+}
+function updateLiveInsight(){
+ const el=$('liveInsight'); if(!el)return;
+ const total=sum(counts);
+ if(!total){el.textContent=language==='th'?'ถุงยังว่างอยู่ เพิ่มลูกบอลอย่างน้อย 1 ลูกเพื่อเริ่มต้น':'The bag is empty. Add at least one ball to begin.';return}
+ if(!totalDraws){el.textContent=language==='th'?'ยังไม่มีผลทดลอง กด “สุ่ม 1 ครั้ง” หรือ “สุ่มทดลอง” แล้วสังเกตว่าผลจริงต่างจากค่าทฤษฎีแค่ไหน': 'No trials yet. Draw once or run an experiment to compare experimental and theoretical probabilities.';return}
+ const lines=colors.map(c=>{
+   const th=pct(counts[c.key],total), ex=pct(results[c.key],totalDraws), diff=Math.abs(th-ex);
+   return `${c.emoji} ${t('colors')[colors.indexOf(c)]}: ${language==='th'?'ทฤษฎี':'Theory'} ${thaiPct(th)} · ${language==='th'?'ทดลองจริง':'Observed'} ${thaiPct(ex)} · ${language==='th'?'ต่างกัน':'Gap'} ${thaiPct(diff)}`;
+ });
+ const nearest=colors.reduce((a,c)=>Math.abs(pct(results[c.key],totalDraws)-pct(counts[c.key],total)) < Math.abs(pct(results[a.key],totalDraws)-pct(counts[a.key],total)) ? c:a, colors[0]);
+ el.innerHTML=`<div><b>${language==='th'?'จำนวนครั้งที่สุ่ม':'Total trials'}: ${totalDraws}</b></div><div style="margin-top:6px;display:grid;gap:4px">${lines.map(x=>`<div>${x}</div>`).join('')}</div><div style="margin-top:8px">${language==='th'?'ตอนนี้ผลของ':'Currently, the observed rate for'} ${t('colors')[colors.indexOf(nearest)]} ${language==='th'?'ใกล้เคียงค่าทฤษฎีที่สุด':'is closest to its theoretical probability'}.</div>`;
+}
+document.querySelectorAll('[data-predict]').forEach(b=>b.addEventListener('click',()=>{
+ predictedColor=b.dataset.predict;updatePredictionFeedback();
+}));
+document.querySelectorAll('[data-run-count]').forEach(b=>b.addEventListener('click',()=>{
+ $('draws').value=b.dataset.runCount;update();runMany();
+}));
+function renderQuizLanguage(){
+ const qs=[
+  {key:'q1',name:'q1',opts:'q1a'},{key:'q2',name:'q2',opts:'q2a'},{key:'q3',name:'q3',opts:'q3a'}
+ ];
+ qs.forEach((q,i)=>{
+  const box=document.querySelectorAll('.question')[i];box.querySelector('p').textContent=t(q.key);
+  const labels=box.querySelectorAll('.options label');
+  labels.forEach((label,j)=>{const radio=label.querySelector('input');label.textContent='';label.appendChild(radio);label.append(' '+t(q.opts)[j])});
+ });
+ for(let i=1;i<=3;i++){$('f'+i).textContent='';$('f'+i).className='feedback'}
+ $('score').textContent='';
+}
+function update(){
+ counts=values(); const total=sum(counts);
+ colors.forEach(c=>$(c.key+'Val').textContent=counts[c.key]+' '+(language==='th'?'ลูก':t('ball')));
+ $('drawsVal').textContent=$('draws').value+' '+t('times'); $('total').textContent=total;
+ $('theory').textContent=thaiPct(pct(counts.red,total));
+ const box=$('balls');box.innerHTML='';
+ if(!total){box.innerHTML='<span class="muted">'+t('emptyBag')+'</span>'}
+ else{
+  let shown=0;
+  colors.forEach(c=>{for(let i=0;i<counts[c.key]&&shown<36;i++,shown++){let b=document.createElement('span');b.className='ball';b.style.background=c.css;b.title=c.name;b.textContent=c.emoji;box.appendChild(b)}});
+  if(total>36){let more=document.createElement('span');more.className='pill';more.textContent=t('andMore')+(total-36)+' '+t('ball');box.appendChild(more)}
+ }
+ $('theoryBars').innerHTML=colors.map(c=>`<div class="barwrap"><div class="barlabel"><span>${c.emoji} ${t('colors')[colors.indexOf(c)]}</span><strong>${thaiPct(pct(counts[c.key],total))}</strong></div><div class="track"><div class="fill theory" style="width:${pct(counts[c.key],total)}%"></div></div></div>`).join('');
+ drawChart(); renderExp(); updatePredictionFeedback(); updateLiveInsight();
+}
+function drawOne(){
+ const total=sum(counts);if(!total){$('last').textContent=t('latestEmpty');return}
+ let n=Math.random()*total, chosen=colors[colors.length-1];
+ for(const c of colors){n-=counts[c.key];if(n<0){chosen=c;break}}
+ results[chosen.key]++;totalDraws++;last=t('colors')[colors.indexOf(chosen)];$('last').textContent=chosen.emoji+' '+t('colors')[colors.indexOf(chosen)];
+ renderExp();drawChart();updateLiveInsight();
+}
+function runMany(){if(!sum(counts)){alert(t('alert'));return}
+ results={red:0,blue:0,green:0};totalDraws=0;
+ const n=+$('draws').value;for(let i=0;i<n;i++)drawOneQuiet();
+ const winner=colors.reduce((a,c)=>results[c.key]>results[a.key]?c:a,colors[0]);
+ last=(language==='th'?'ทดลองครบ ':'Completed ')+n+' '+t('times');$('last').textContent=last;renderExp();drawChart();updateLiveInsight();
+}
+function drawOneQuiet(){let n=Math.random()*sum(counts),chosen=colors[colors.length-1];for(const c of colors){n-=counts[c.key];if(n<0){chosen=c;break}}results[chosen.key]++;totalDraws++}
+function renderExp(){
+ $('expBars').innerHTML=colors.map(c=>{let actual=pct(results[c.key],totalDraws),theory=pct(counts[c.key],sum(counts));return `<div class="barwrap"><div class="barlabel"><span>${c.emoji} ${t('colors')[colors.indexOf(c)]} — ${t('experimentCount')}${results[c.key]} ${t('times')}</span><strong>${t('actual')} ${thaiPct(actual)} / ${t('theory')} ${thaiPct(theory)}</strong></div><div class="track"><div class="fill exp" style="width:${actual}%"></div></div></div>`}).join('');
+}
+function drawChart(){
+ const canvas=$('chart');
+ const displayWidth = Math.max(260, Math.floor(canvas.getBoundingClientRect().width || canvas.parentElement.getBoundingClientRect().width - 2));
+ const displayHeight = window.matchMedia('(max-width: 600px)').matches ? 230 : 280;
+ if (canvas.width !== displayWidth) canvas.width = displayWidth;
+ if (canvas.height !== displayHeight) canvas.height = displayHeight;
+ const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+ ctx.clearRect(0,0,w,h);ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+ const left=45,right=18,top=24,bottom=42,gw=w-left-right,gh=h-top-bottom;
+ ctx.font='13px Tahoma';ctx.fillStyle='#68718b';ctx.strokeStyle='#e5e8f5';ctx.lineWidth=1;
+ for(let p=0;p<=100;p+=25){let y=top+gh*(1-p/100);ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(w-right,y);ctx.stroke();ctx.fillText(p+'%',5,y+4)}
+ const slot=gw/3;
+ colors.forEach((c,i)=>{const x=left+slot*i+slot*.18,bw=slot*.26;const theory=pct(counts[c.key],sum(counts)),actual=pct(results[c.key],totalDraws);
+  ctx.fillStyle=c.css;ctx.globalAlpha=.9;ctx.fillRect(x,top+gh*(1-theory/100),bw,gh*theory/100);
+  ctx.globalAlpha=.5;ctx.fillRect(x+bw+7,top+gh*(1-actual/100),bw,gh*actual/100);ctx.globalAlpha=1;
+  ctx.fillStyle='#202744';ctx.textAlign='center';ctx.fillText(t('colors')[colors.indexOf(c)],x+bw+4, h-17);
+ });
+ ctx.textAlign='left';ctx.fillStyle='#68718b';
+ if(w < 440){
+   ctx.fillRect(left,7,9,9);ctx.fillText(t('theory'),left+13,16);
+   ctx.globalAlpha=.5;ctx.fillRect(left+105,7,9,9);ctx.globalAlpha=1;ctx.fillText(t('experimental'),left+118,16);
+ } else {
+   ctx.fillRect(w-215,8,10,10);ctx.fillText(t('theory'),w-200,17);
+   ctx.globalAlpha=.5;ctx.fillRect(w-120,8,10,10);ctx.globalAlpha=1;ctx.fillText(t('experimental'),w-105,17);
+ }
+}
+['red','blue','green','draws'].forEach(id=>{
+ const slider=$(id);
+ slider.addEventListener('input',update,{passive:true});
+ slider.addEventListener('change',update,{passive:true});
+});
+$('run').addEventListener('click',runMany);
+$('step').addEventListener('click',drawOne);
+$('reset').addEventListener('click',()=>{results={red:0,blue:0,green:0};totalDraws=0;last='—';$('last').textContent=last;updateLiveInsight();update()});
+const answers={q1:{correct:'b'},q2:{correct:'c'},q3:{correct:'b'}};
+$('quiz').addEventListener('submit',e=>{e.preventDefault();let score=0;Object.entries(answers).forEach(([q,a],i)=>{const chosen=document.querySelector(`input[name="${q}"]:checked`);const f=$('f'+(i+1));if(chosen&&chosen.value===a.correct){score++;f.className='feedback correct';f.textContent=t('correct')+translations[language].explanations[i]}else{f.className='feedback incorrect';f.textContent=t('incorrect')+translations[language].explanations[i]}});$('score').textContent=` ${t('score')}${score}/3`; $('score').className='score-pop'; if($('quizProgress')) $('quizProgress').style.width='100%';});
+$('showAnswers').addEventListener('click',()=>Object.entries(answers).forEach(([q,a],i)=>{$('f'+(i+1)).className='feedback';$('f'+(i+1)).textContent=translations[language].explanations[i]}));
+$('clearQuiz').addEventListener('click',()=>{$('quiz').reset();for(let i=1;i<=3;i++){$('f'+i).textContent='';$('f'+i).className='feedback'}$('score').textContent='';$('score').className='';if($('quizProgress'))$('quizProgress').style.width='0%';updateQuizProgress()});
+$('lang-th').addEventListener('click',()=>setLanguage('th'));
+$('lang-en').addEventListener('click',()=>setLanguage('en'));
+renderQuizLanguage();
+update(); updatePredictionFeedback(); updateLiveInsight();
+window.addEventListener('resize', drawChart);
+window.addEventListener('orientationchange', ()=>setTimeout(drawChart, 150));
+window.addEventListener('load', ()=>{update();drawChart();});
+document.addEventListener('visibilitychange', ()=>{if(!document.hidden) update();});
+
+/* Touch-friendly slider value refresh */
+function refreshSliderReadouts(){
+ const lang = (typeof language !== 'undefined' && language === 'en') ? 'en' : 'th';
+ [['red','redVal'],['blue','blueVal'],['green','greenVal']].forEach(([inputId,outId])=>{
+   const input=document.getElementById(inputId),out=document.getElementById(outId);
+   if(input && out) out.textContent=input.value+(lang==='th'?' ลูก':' balls');
+ });
+ const draws=document.getElementById('draws'),drawsOut=document.getElementById('drawsVal');
+ if(draws && drawsOut) drawsOut.textContent=draws.value+(lang==='th'?' ครั้ง':' trials');
+}
+['red','blue','green','draws'].forEach(id=>{
+ const el=document.getElementById(id);
+ if(el){
+  el.addEventListener('input',refreshSliderReadouts,{passive:true});
+  el.addEventListener('change',refreshSliderReadouts,{passive:true});
+  el.addEventListener('touchend',()=>setTimeout(refreshSliderReadouts,0),{passive:true});
+ }
+});
+
+
+// Quick-start scenarios make the experiment easier to explore.
+const presets = {
+ default:{red:3,blue:2,green:5},
+ equal:{red:5,blue:5,green:5},
+ red:{red:12,blue:3,green:2},
+ green:{red:2,blue:3,green:12}
+};
+document.querySelectorAll('[data-preset]').forEach(btn=>{
+ btn.addEventListener('click',()=>{
+   const p=presets[btn.dataset.preset];
+   $('red').value=p.red;$('blue').value=p.blue;$('green').value=p.green;
+   document.querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('active',b===btn));
+   update();
+ });
+});
+function updateQuizProgress(){
+ const checked=document.querySelectorAll('#quiz input[type="radio"]:checked').length;
+ const bar=$('quizProgress');
+ if(bar) bar.style.width=(checked/3*100)+'%';
+}
+document.querySelectorAll('#quiz input[type="radio"]').forEach(r=>r.addEventListener('change',updateQuizProgress));
+
+</script>
+</body>
+</html>
